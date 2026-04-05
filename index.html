@@ -814,7 +814,11 @@
                     const product = productsData.find(p => p.id === id);
                     if (product) {
                         product.price = newPrice;
-                        localStorage.setItem('voltEdgeProducts', JSON.stringify(productsData));
+                        try {
+                            localStorage.setItem('voltEdgeProducts', JSON.stringify(productsData));
+                        } catch (e) {
+                            console.warn("Could not write to local storage. Only saving to active memory stream.");
+                        }
                         editingProductId = null;
                         showToast(`Saved new price for ${product.name}`);
                         renderProducts();
