@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Premium electrical components for engineers, hobbyists, and industrial applications. Global shipping, competitive pricing.">
+    <title>VoltEdge | High-Performance Electrical Components</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Core Colors */
+            --bg-base: #030305;
+            --bg-surface: rgba(15, 15, 20, 0.6);
+            --bg-card: rgba(25, 25, 32, 0.4);
+            
+            /* Accents */
+            --primary: #00e5ff;
+            --primary-glow: rgba(0, 229, 255, 0.4);
+            --secondary: #7000ff;
+            --secondary-glow: rgba(112, 0, 255, 0.4);
+            --accent: #ffae00; /* Copper/Gold feel for components */
+            
+            /* Text */
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --text-dark: #1e293b;
+            
+            /* UI Elements */
+            --border-light: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(0, 229, 255, 0.3);
+            
+            /* Fonts */
+            --font-sans: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Abstract Glow Backgrounds */
+        .glow-bg {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .glow-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.5;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+        .glow-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: var(--secondary-glow); }
+        .glow-2 { bottom: -20%; right: -10%; width: 60vw; height: 60vw; background: var(--primary-glow); animation-delay: -5s; }
+        .glow-3 { top: 40%; left: 40%; width: 40vw; height: 40vw; background: rgba(255, 174, 0, 0.15); animation-delay: -10s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(5%, 10%) scale(1.1); }
+        }
+
+        /* Grid Background Pattern */
+        .grid-pattern {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            color: transparent;
+            display: inline-block;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+
+        /* Navbar */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            background: rgba(3, 3, 5, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-light);
+            transition: all 0.3s;
+        }
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+        .logo i { color: var(--primary); }
+        
+        .nav-links { display: flex; gap: 2.5rem; }
+        .nav-links a {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: 0.3s;
+        }
+        .nav-links a:hover { color: var(--text-main); }
+
+        .nav-actions { display: flex; align-items: center; gap: 1.5rem; }
+        .cart-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.2rem;
+            cursor: pointer;
+            position: relative;
+            transition: 0.3s;
+        }
+        .cart-btn:hover { color: var(--primary); }
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            background: var(--primary);
+            color: var(--bg-base);
+            font-size: 0.7rem;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.7rem 1.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text-main);
+            box-shadow: 0 4px 15px var(--secondary-glow);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--secondary-glow);
+            filter: brightness(1.1);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-light);
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            background: rgba(0, 229, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 12rem 0 6rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .hero-content {
+            max-width: 800px;
+            z-index: 2;
+        }
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid var(--primary-glow);
+            border-radius: 50px;
+            color: var(--primary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .hero h1 {
+            font-size: clamp(3rem, 6vw, 5.5rem);
+            margin-bottom: 1.5rem;
+            letter-spacing: -1.5px;
+        }
+        .hero p {
+            font-size: clamp(1.1rem, 2vw, 1.25rem);
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+        }
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 4rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border-light);
+        }
+        .stat-item h3 { font-size: 2rem; color: var(--text-main); margin-bottom: 0.2rem; }
+        .stat-item p { font-size: 0.9rem; color: var(--text-muted); margin: 0; }
+
+        /* Store / Components Section */
+        .section { padding: 6rem 0; }
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        .section-header h2 {
+            font-size: clamp(2.2rem, 4vw, 3rem);
+            margin-bottom: 1rem;
+        }
+        .section-header p {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        /* Product Filters */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            color: var(--text-muted);
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.4s ease;
+            position: relative;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at top right, rgba(0,229,255,0.05), transparent 60%);
+            opacity: 0;
+            transition: 0.4s;
+        }
+        .product-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--border-hover);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+        .product-card:hover::before { opacity: 1; }
+
+        .product-image-wrap {
+            width: 100%;
+            height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #0a0a0e;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-image-wrap img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: 0.5s;
+        }
+        .product-card:hover .product-image-wrap img { transform: scale(1.08); }
+        
+        .product-category {
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .product-title {
+            font-size: 1.25rem;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+        }
+        .product-price {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .add-to-cart {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-light);
+            color: var(--text-main);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .add-to-cart:hover {
+            background: var(--primary);
+            color: var(--bg-base);
+            border-color: var(--primary);
+        }
+
+        /* Features Section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .feature-card {
+            padding: 2.5rem;
+            background: var(--bg-surface);
+            border-radius: 20px;
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 1.5rem;
+        }
+        .feature-card h3 { margin-bottom: 1rem; font-size: 1.4rem; }
+        .feature-card p { color: var(--text-muted); }
+
+        /* Editing Info Alert */
+        .edit-alert {
+            background: rgba(112, 0, 255, 0.1);
+            border: 1px solid var(--secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+        .edit-alert i { font-size: 1.5rem; color: var(--secondary); margin-top: 3px; }
+        .edit-alert h4 { color: #fff; margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .edit-alert p { color: var(--text-muted); font-size: 0.95rem; }
+        .edit-alert code {
+            background: rgba(0,0,0,0.5);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--primary);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-light);
+            padding: 4rem 0 2rem;
+            background: rgba(3,3,5,0.8);
+            margin-top: 6rem;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 3rem;
+        }
+        .footer-col h4 {
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        .footer-col p { color: var(--text-muted); margin-bottom: 1.5rem; }
+        .footer-links { display: flex; flex-direction: column; gap: 0.8rem; }
+        .footer-links a { color: var(--text-muted); transition: 0.3s; }
+        .footer-links a:hover { color: var(--primary); }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-light);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-hover);
+            color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .toast i { color: var(--primary); font-size: 1.2rem; }
+
+        @media (max-width: 992px) {
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+            .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero { padding: 9rem 0 4rem; }
+            .hero h1 { font-size: 2.5rem; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .products-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Backgrounds -->
+    <div class="glow-bg">
+        <div class="glow-blob glow-1"></div>
+        <div class="glow-blob glow-2"></div>
+        <div class="glow-blob glow-3"></div>
+    </div>
+    <div class="grid-pattern"></div>
+
+    <!-- Navigation -->
+    <header>
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <i class="fa-solid fa-microchip"></i> VoltEdge
+            </a>
+            <nav class="nav-links">
+                <a href="#store">Components</a>
+                <a href="#features">Features</a>
+                <a href="#about">About Us</a>
+                <a href="#contact">Contact</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="cart-btn" onclick="showToast('Opened Cart (Demo)')">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+                <a href="#store" class="btn btn-primary" style="padding: 0.5rem 1.2rem; font-size: 0.85rem;">Shop Now</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">Industrial Grade Electronics</div>
+                <h1>Empowering Innovation with <span class="text-gradient">Premium Components</span></h1>
+                <p>Discover high-performance microcontrollers, precise passive components, and robust power modules. Built for engineers, developers, and industry leaders.</p>
+                
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <a href="#store" class="btn btn-primary">
+                        Browse Catalog <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <a href="#features" class="btn btn-outline">
+                        Learn More
+                    </a>
+                </div>
+
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <h3>15k+</h3>
+                        <p>Components in Stock</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>99.9%</h3>
+                        <p>Quality Guarantee</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>24/7</h3>
+                        <p>Expert Support</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products / Store Section -->
+    <section id="store" class="section">
+        <div class="container">
+            
+            <div class="edit-alert">
+                <i class="fa-solid fa-circle-info"></i>
+                <div>
+                    <h4>Admin Notice: Pricing & Inventory Management</h4>
+                    <p>To easily edit product prices, names, and images, scroll down to the <code>&lt;script&gt;</code> tag at the bottom of this file. Locate the <code>productsData</code> array and modify the <strong>price</strong> values or add new components. The interface will automatically update.</p>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2>Component <span class="text-gradient">Catalog</span></h2>
+                <p>High-quality, reliable electrical components for your next major project. Sourced from trusted manufacturers globally.</p>
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">All Products</button>
+                <button class="filter-btn" data-filter="Microcontrollers">Controllers</button>
+                <button class="filter-btn" data-filter="Passive">Passives</button>
+                <button class="filter-btn" data-filter="Power">Power</button>
+                <button class="filter-btn" data-filter="Sensors">Sensors</button>
+            </div>
+
+            <div class="products-grid" id="productsContainer">
+                <!-- Products dynamically injected via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Choose <span class="text-gradient">VoltEdge?</span></h2>
+                <p>We provide more than just parts. We provide reliability and performance that powers the next generation of technology.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3>Tested Quality</h3>
+                    <p>Every component batch undergoes rigorous multi-stage quality assurance to meet industrial and military standards.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                    <h3>Global Logistics</h3>
+                    <p>Same-day dispatch and integrated supply chain systems mean you get your parts exactly when you need them.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-tags"></i></div>
+                    <h3>Volume Pricing</h3>
+                    <p>Unlock heavily discounted tiers for bulk manufacturing and prototyping setups seamlessly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <a href="#" class="logo" style="margin-bottom: 1.5rem; display: inline-flex;">
+                        <i class="fa-solid fa-microchip"></i> VoltEdge
+                    </a>
+                    <p>The premier B2B and B2C distributor for high-performance electronic components, ICs, and prototyping hardware.</p>
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem; color: var(--text-muted);">
+                        <i class="fa-brands fa-linkedin" style="font-size: 1.5rem; cursor: pointer;"></i>
+                        <i class="fa-brands fa-twitter" style="font-size: 1.5rem; cursor: pointer;"></i>
+                        <i class="fa-brands fa-github" style="font-size: 1.5rem; cursor: pointer;"></i>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Categories</h4>
+                    <div class="footer-links">
+                        <a href="#">Microcontrollers</a>
+                        <a href="#">Passive Components</a>
+                        <a href="#">Semiconductors</a>
+                        <a href="#">Power Modules</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <div class="footer-links">
+                        <a href="#">About Us</a>
+                        <a href="#">Quality Assurance</a>
+                        <a href="#">Career</a>
+                        <a href="#">Contact</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <div class="footer-links">
+                        <a href="#">Data Sheets</a>
+                        <a href="#">Shipping Policy</a>
+                        <a href="#">Returns</a>
+                        <a href="#">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 VoltEdge Electronics. Engineered with precision.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast UI -->
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">Item added to cart!</span>
+    </div>
+
+    <!-- JavaScript Data and Logic -->
+    <script>
+        /**
+         * ==========================================
+         * EDIT PRODUCTS & PRICES HERE
+         * ==========================================
+         * You can easily change the "price" value to map to your money requirements.
+         * The prices will automatically render formatting (e.g. $25.00).
+         */
+        const productsData = [
+            {
+                id: 1,
+                name: "ATmega328P Microcontroller IC",
+                category: "Microcontrollers",
+                price: 4.50,
+                image: "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 2,
+                name: "Raspberry Pi 4 Model B (4GB)",
+                category: "Microcontrollers",
+                price: 55.00,
+                image: "https://images.unsplash.com/photo-1601132359864-c974e79890ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 3,
+                name: "10k Ohm Resistor (Kit of 500)",
+                category: "Passive",
+                price: 7.99,
+                image: "https://images.unsplash.com/photo-1555664424-778a1e5e1b48?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+            },
+            {
+                id: 4,
+                name: "Electrolytic Capacitor 100uF 50V",
+                category: "Passive",
+                price: 2.15,
+                image: "https://plus.unsplash.com/premium_photo-1678854425638-16cb6002167c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 5,
+                name: "Step-Down Buck Converter LM2596",
+                category: "Power",
+                price: 3.50,
+                image: "https://images.unsplash.com/photo-1592502685935-430c0066ee3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 6,
+                name: "Ultrasonic Distance Sensor HC-SR04",
+                category: "Sensors",
+                price: 2.80,
+                image: "https://images.unsplash.com/photo-1580828343064-fde4cad202d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+            },
+            {
+                id: 7,
+                name: "ESP32 WROOM-32 Wi-Fi/BT Module",
+                category: "Microcontrollers",
+                price: 6.25,
+                image: "https://images.unsplash.com/photo-1600213794344-93aa4e6e66e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 8,
+                name: "12V 5A Switching Power Supply",
+                category: "Power",
+                price: 18.90,
+                image: "https://images.unsplash.com/photo-1517077304055-6e89abf0ceb6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            }
+        ];
+        // ==========================================
+
+        let cartCount = 0;
+
+        // Render Products
+        const productsContainer = document.getElementById('productsContainer');
+        const cartCountUI = document.getElementById('cartCount');
+        
+        function renderProducts(filter = 'all') {
+            productsContainer.innerHTML = '';
+            
+            const filteredProducts = filter === 'all' 
+                ? productsData 
+                : productsData.filter(p => p.category === filter);
+
+            filteredProducts.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-image-wrap">
+                        <img src="${product.image}" alt="${product.name}" loading="lazy">
+                    </div>
+                    <div class="product-category">${product.category}</div>
+                    <h3 class="product-title">${product.name}</h3>
+                    <div class="product-footer">
+                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        <button class="add-to-cart" onclick="addToCart('${product.name}')" title="Add to Cart">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                `;
+                productsContainer.appendChild(card);
+            });
+        }
+
+        // Initialize Rendering
+        renderProducts();
+
+        // Filtering Logic
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderProducts(btn.dataset.filter);
+            });
+        });
+
+        // Add to Cart Simulation
+        function addToCart(productName) {
+            cartCount++;
+            cartCountUI.textContent = cartCount;
+            
+            // Pulse animation on cart badge
+            cartCountUI.style.transform = 'scale(1.5)';
+            setTimeout(() => { cartCountUI.style.transform = 'scale(1)'; }, 200);
+
+            showToast(`Added ${productName} to cart.`);
+        }
+
+        // Toast Notification Logic
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+        let toastTimeout;
+
+        function showToast(message) {
+            toastMsg.textContent = message;
+            toast.classList.add('show');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Navbar Scroll Effect
+        const header = document.querySelector('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.style.background = 'rgba(3, 3, 5, 0.9)';
+                header.style.borderBottom = '1px solid rgba(0, 229, 255, 0.2)';
+            } else {
+                header.style.background = 'rgba(3, 3, 5, 0.7)';
+                header.style.borderBottom = '1px solid var(--border-light)';
+            }
+        });
+    </script>
+</body>
+</html>
