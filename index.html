@@ -505,6 +505,45 @@
         }
         .toast i { color: var(--primary); font-size: 1.2rem; }
 
+        /* Admin Tools */
+        .admin-edit-input {
+            width: 80px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 700;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            outline: none;
+        }
+        .btn-admin {
+            background: transparent;
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+            border-radius: 6px;
+            padding: 0.3rem 0.7rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            transition: 0.3s;
+        }
+        .btn-admin:hover {
+            background: var(--secondary);
+            color: #fff;
+        }
+        .admin-save-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
         @media (max-width: 992px) {
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
             .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
@@ -688,7 +727,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 VoltEdge Electronics. Engineered with precision.</p>
+                <p>&copy; 2026 VoltEdge Electronics. Engineered with precision. <button onclick="toggleAdminMode()" style="background:none; border:none; color:var(--secondary); cursor:pointer; font-size:0.8rem; margin-left: 10px;"><i class="fa-solid fa-lock"></i> Admin Login</button></p>
             </div>
         </div>
     </footer>
@@ -703,95 +742,130 @@
     <script>
         /**
          * ==========================================
-         * EDIT PRODUCTS & PRICES HERE
+         * ADMIN PRICE EDITING LOGIC & DATA
          * ==========================================
-         * You can easily change the "price" value to map to your money requirements.
-         * The prices will automatically render formatting (e.g. $25.00).
          */
-        const productsData = [
+        const defaultProductsData = [
             {
-                id: 1,
-                name: "ATmega328P Microcontroller IC",
-                category: "Microcontrollers",
-                price: 4.50,
+                id: 1, name: "ATmega328P Microcontroller IC", category: "Microcontrollers", price: 4.50,
                 image: "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
             },
             {
-                id: 2,
-                name: "Raspberry Pi 4 Model B (4GB)",
-                category: "Microcontrollers",
-                price: 55.00,
-                image: "https://images.unsplash.com/photo-1601132359864-c974e79890ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                id: 2, name: "Raspberry Pi 4 Model B (4GB)", category: "Microcontrollers", price: 55.00,
+                image: "https://images.unsplash.com/photo-1531265726475-52ad60219627?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
             },
             {
-                id: 3,
-                name: "10k Ohm Resistor (Kit of 500)",
-                category: "Passive",
-                price: 7.99,
+                id: 3, name: "10k Ohm Resistor (Kit of 500)", category: "Passive", price: 7.99,
                 image: "https://images.unsplash.com/photo-1555664424-778a1e5e1b48?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
             },
             {
-                id: 4,
-                name: "Electrolytic Capacitor 100uF 50V",
-                category: "Passive",
-                price: 2.15,
-                image: "https://plus.unsplash.com/premium_photo-1678854425638-16cb6002167c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                id: 4, name: "Electrolytic Capacitor Kit", category: "Passive", price: 12.15,
+                image: "https://images.unsplash.com/photo-1563207153-f403bf289096?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
             },
             {
-                id: 5,
-                name: "Step-Down Buck Converter LM2596",
-                category: "Power",
-                price: 3.50,
-                image: "https://images.unsplash.com/photo-1592502685935-430c0066ee3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                id: 5, name: "Step-Down Buck Converter", category: "Power", price: 3.50,
+                image: "https://images.unsplash.com/photo-1592503254549-3346e271eb52?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
             },
             {
-                id: 6,
-                name: "Ultrasonic Distance Sensor HC-SR04",
-                category: "Sensors",
-                price: 2.80,
-                image: "https://images.unsplash.com/photo-1580828343064-fde4cad202d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                id: 6, name: "Ultrasonic Distance Sensor", category: "Sensors", price: 2.80,
+                image: "https://images.unsplash.com/photo-1517077304055-6e89abf0ceb6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
             },
             {
-                id: 7,
-                name: "ESP32 WROOM-32 Wi-Fi/BT Module",
-                category: "Microcontrollers",
-                price: 6.25,
-                image: "https://images.unsplash.com/photo-1600213794344-93aa4e6e66e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                id: 7, name: "ESP32 WROOM-32 Module", category: "Microcontrollers", price: 6.25,
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
             },
             {
-                id: 8,
-                name: "12V 5A Switching Power Supply",
-                category: "Power",
-                price: 18.90,
-                image: "https://images.unsplash.com/photo-1517077304055-6e89abf0ceb6?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+                id: 8, name: "12V 5A Switching Power Supply", category: "Power", price: 18.90,
+                image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
             }
         ];
-        // ==========================================
 
+        // Load prices from LocalStorage if they exist, otherwise use defaults
+        let productsData = JSON.parse(localStorage.getItem('voltEdgeProducts'));
+        if (!productsData) {
+            productsData = defaultProductsData;
+        }
+
+        let isAdmin = false;
+        let editingProductId = null;
         let cartCount = 0;
 
-        // Render Products
         const productsContainer = document.getElementById('productsContainer');
         const cartCountUI = document.getElementById('cartCount');
-        
+
+        // Admin Toggle Function
+        function toggleAdminMode() {
+            if (isAdmin) {
+                isAdmin = false;
+                showToast("Admin Mode Disabled");
+                renderProducts();
+            } else {
+                const password = prompt("Enter Admin Password (Password is: admin123):");
+                if (password === "admin123") {
+                    isAdmin = true;
+                    showToast("Admin Mode Enabled! You can now edit prices.");
+                    renderProducts();
+                } else if (password !== null) {
+                    alert("Incorrect Password!");
+                }
+            }
+        }
+
+        // Save Price Function
+        function savePrice(id) {
+            const newPrice = parseFloat(document.getElementById(`price-input-${id}`).value);
+            if (!isNaN(newPrice) && newPrice >= 0) {
+                const product = productsData.find(p => p.id === id);
+                product.price = newPrice;
+                localStorage.setItem('voltEdgeProducts', JSON.stringify(productsData));
+                editingProductId = null;
+                showToast(`Saved new price for ${product.name}`);
+                renderProducts();
+            } else {
+                alert("Please enter a valid price!");
+            }
+        }
+
+        function setEditing(id) {
+            editingProductId = id;
+            renderProducts();
+        }
+
         function renderProducts(filter = 'all') {
             productsContainer.innerHTML = '';
-            
-            const filteredProducts = filter === 'all' 
-                ? productsData 
-                : productsData.filter(p => p.category === filter);
+            const filteredProducts = filter === 'all' ? productsData : productsData.filter(p => p.category === filter);
 
             filteredProducts.forEach(product => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
+                
+                // Constructing the price HTML based on Admin/Edit state
+                let priceHTML = `<div class="product-price">$${product.price.toFixed(2)}</div>`;
+                
+                if (isAdmin) {
+                    if (editingProductId === product.id) {
+                        priceHTML = `
+                            <div style="display:flex; align-items:center; gap: 5px;">
+                                <span class="product-price">$</span>
+                                <input type="number" id="price-input-${product.id}" class="admin-edit-input" value="${product.price}" step="0.01">
+                                <button class="admin-save-btn" onclick="savePrice(${product.id})">Save</button>
+                            </div>
+                        `;
+                    } else {
+                        priceHTML += `<button class="btn-admin" onclick="setEditing(${product.id})"><i class="fa-solid fa-pen"></i> Edit</button>`;
+                    }
+                }
+
                 card.innerHTML = `
                     <div class="product-image-wrap">
-                        <img src="${product.image}" alt="${product.name}" loading="lazy">
+                        <img src="${product.image}" alt="${product.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'">
                     </div>
                     <div class="product-category">${product.category}</div>
                     <h3 class="product-title">${product.name}</h3>
                     <div class="product-footer">
-                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            ${priceHTML}
+                        </div>
                         <button class="add-to-cart" onclick="addToCart('${product.name}')" title="Add to Cart">
                             <i class="fa-solid fa-plus"></i>
                         </button>
