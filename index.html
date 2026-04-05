@@ -752,10 +752,17 @@
             }
         ];
 
-        // Load prices from LocalStorage if they exist, otherwise use defaults
-        let productsData = JSON.parse(localStorage.getItem('voltEdgeProducts'));
-        if (!productsData) {
-            productsData = defaultProductsData;
+        // Safely Parse LocalStorage
+        let productsData = [];
+        try {
+            const stored = localStorage.getItem('voltEdgeProducts');
+            if (stored) {
+                productsData = JSON.parse(stored);
+            } else {
+                productsData = JSON.parse(JSON.stringify(defaultProductsData));
+            }
+        } catch (e) {
+            productsData = JSON.parse(JSON.stringify(defaultProductsData));
         }
 
         let isAdmin = false;
@@ -766,7 +773,7 @@
         const cartCountUI = document.getElementById('cartCount');
 
         // Admin Toggle Function
-        function toggleAdminMode() {
+        window.toggleAdminMode = function() {
             if (isAdmin) {
                 isAdmin = false;
                 editingProductId = null;
@@ -782,32 +789,64 @@
                     alert("Incorrect Password!");
                 }
             }
-        }
+        };
 
-        // Save Price Function
-        function savePrice(event, id) {
-            if(event) event.preventDefault();
-            const newPrice = parseFloat(document.getElementById(`price-input-${id}`).value);
-            if (!isNaN(newPrice) && newPrice >= 0) {
-                const product = productsData.find(p => p.id === id);
-                product.price = newPrice;
-                localStorage.setItem('voltEdgeProducts', JSON.stringify(productsData));
-                editingProductId = null;
-                showToast(`Saved new price for ${product.name}`);
+        // Event Delegation for Button Clicks
+        productsContainer.addEventListener('click', function(e) {
+            // Edit Button Click
+            const editBtn = e.target.closest('.btn-admin');
+            if (editBtn) {
+                e.preventDefault();
+                editingProductId = parseInt(editBtn.getAttribute('data-id'));
                 renderProducts();
-            } else {
-                alert("Please enter a valid price!");
+                return;
             }
+
+            // Save Button Click
+            const saveBtn = e.target.closest('.admin-save-btn');
+            if (saveBtn) {
+                e.preventDefault();
+                const id = parseInt(saveBtn.getAttribute('data-id'));
+                const input = document.getElementById(`price-input-${id}`);
+                const newPrice = parseFloat(input.value);
+                
+                if (!isNaN(newPrice) && newPrice >= 0) {
+                    const product = productsData.find(p => p.id === id);
+                    if (product) {
+                        product.price = newPrice;
+                        localStorage.setItem('voltEdgeProducts', JSON.stringify(productsData));
+                        editingProductId = null;
+                        showToast(`Saved new price for ${product.name}`);
+                        renderProducts();
+                    }
+                } else {
+                    alert("Please enter a valid price!");
+                }
+                return;
+            }
+
+            // Add To Cart Button Click
+            const cartBtn = e.target.closest('.add-to-cart');
+            if (cartBtn) {
+                e.preventDefault();
+                const title = cartBtn.getAttribute('data-title');
+                addToCart(title);
+            }
+        });
+
+        // Add to Cart Simulation
+        function addToCart(productName) {
+            cartCount++;
+            cartCountUI.textContent = cartCount;
+            
+            cartCountUI.style.transform = 'scale(1.5)';
+            setTimeout(() => { cartCountUI.style.transform = 'scale(1)'; }, 200);
+
+            showToast(`Added ${productName} to cart.`);
         }
 
-        function setEditing(event, id) {
-            if(event) event.preventDefault();
-            editingProductId = id;
-            renderProducts();
-        }
-
+        // Render System
         function renderProducts() {
-            // Find active filter
             const activeFilterBtn = document.querySelector('.filter-btn.active');
             const filter = activeFilterBtn ? activeFilterBtn.dataset.filter : 'all';
 
@@ -827,11 +866,11 @@
                             <div style="display:flex; align-items:center; gap: 5px;">
                                 <span class="product-price" style="font-size: 1rem;">$</span>
                                 <input type="number" id="price-input-${product.id}" class="admin-edit-input" value="${product.price}" step="0.01">
-                                <button class="admin-save-btn" onclick="savePrice(event, ${product.id})">Save</button>
+                                <button class="admin-save-btn" data-id="${product.id}">Save</button>
                             </div>
                         `;
                     } else {
-                        priceHTML += `<button class="btn-admin" onclick="setEditing(event, ${product.id})"><i class="fa-solid fa-pen"></i> Edit</button>`;
+                        priceHTML += `<button class="btn-admin" data-id="${product.id}"><i class="fa-solid fa-pen"></i> Edit</button>`;
                     }
                 }
 
@@ -845,7 +884,7 @@
                         <div style="display: flex; align-items: center; gap: 5px;">
                             ${priceHTML}
                         </div>
-                        <button class="add-to-cart" onclick="addToCart('${product.name}')" title="Add to Cart">
+                        <button class="add-to-cart" data-title="${product.name}" title="Add to Cart">
                             <i class="fa-solid fa-plus"></i>
                         </button>
                     </div>
@@ -863,21 +902,9 @@
             btn.addEventListener('click', () => {
                 filterBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                renderProducts(btn.dataset.filter);
+                renderProducts();
             });
         });
-
-        // Add to Cart Simulation
-        function addToCart(productName) {
-            cartCount++;
-            cartCountUI.textContent = cartCount;
-            
-            // Pulse animation on cart badge
-            cartCountUI.style.transform = 'scale(1.5)';
-            setTimeout(() => { cartCountUI.style.transform = 'scale(1)'; }, 200);
-
-            showToast(`Added ${productName} to cart.`);
-        }
 
         // Toast Notification Logic
         const toast = document.getElementById('toast');
